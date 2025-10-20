@@ -8,11 +8,11 @@ const outfit = Outfit({
   subsets: ["latin"],
 });
 
-const poppins = Poppins({
-  weight: [ "100", "200", "300", "400", "500", "600", "700"],
-  subsets: ["latin"],
-  variable: "--font-poppins",
-})
+// const poppins = Poppins({
+//   weight: [ "100", "200", "300", "400", "500", "600", "700"],
+//   subsets: ["latin"],
+//   variable: "--font-poppins",
+// });
 
 export const metadata: Metadata = {
   title: "Create Next App",
