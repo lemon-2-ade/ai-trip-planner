@@ -1,7 +1,10 @@
+'use client';
+
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowUp, Globe2, Landmark, Plane, Send } from "lucide-react";
 import React from "react";
+import { useRouter } from "next/navigation";
 
 const suggestions = [
   {
@@ -23,6 +26,8 @@ const suggestions = [
 ];
 
 function Hero() {
+  const router = useRouter();
+  
   return (
     <div className="mt-24 w-full flex justify-center">
       {/* Content */}
@@ -37,12 +42,12 @@ function Hero() {
         </p>
         {/* Input Box */}
         <div>
-          <div className="border rounded-2xl p-4 relative">
+          <div className="border-1 shadow-md rounded-2xl p-4 relative">
             <Textarea
-              placeholder="Create a trip for Goa to Manali"
+              placeholder="Create a trip for Goa to Manali :D"
               className="w-full h-28 bg-transparent border-none focus-visible:ring-0 shadow-none resize-none"
             />
-            <Button size={"icon"} className="absolute bottom-6 right-6">
+            <Button size={"icon"} className="absolute bottom-6 right-6 hover:cursor-pointer" onClick={() => router.push('/create-new-trip')}>
               <Send className="h-4 w-4" />
             </Button>
           </div>

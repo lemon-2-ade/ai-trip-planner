@@ -1,6 +1,9 @@
+'use client';
+
 import Link from "next/link";
 import Image from "next/image";
 import React from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 const menuOptions = [
@@ -10,8 +13,10 @@ const menuOptions = [
 ];
 
 function Header() {
+  const router = useRouter();
+  
   return (
-    <div className="flex justify-between items-center p-4">
+    <div className="flex justify-between items-center p-4 border-2">
       {/* Logo */}
       <div className="flex gap-2 items-center">
         <Image src={"/logo.svg"} alt="Logo" width={40} height={40} />
@@ -26,7 +31,7 @@ function Header() {
         ))}
       </div>
       {/* Get Started Button */}
-      <Button>Get Started</Button>
+      <Button className="hover:cursor-pointer" onClick={() => router.push('/create-new-trip')}>Get Started</Button>
     </div>
   );
 }
