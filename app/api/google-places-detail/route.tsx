@@ -21,7 +21,10 @@ export async function POST(req: NextRequest) {
       config
     );
 
-    return NextResponse.json(result?.data);
+    const placeRefName = result?.data?.places[0]?.photos[0]?.name;
+    const photoRefUrl = `https://places.googleapis.com/v1/${placeRefName}/media?maxHeightPx=1000&maxWidthPx=1000&key=${process.env.GOOGLE_PLACES_API_KEY}`;
+
+    return NextResponse.json(photoRefUrl);
   } catch (error) {
     console.error("Error fetching place details:", error);
 

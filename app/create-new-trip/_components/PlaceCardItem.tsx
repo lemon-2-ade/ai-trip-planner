@@ -5,7 +5,11 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Activity } from "./Chatbox";
 
-function PlaceCardItem({ activity }: { activity: Activity }) {
+type Props = {
+  activity: Activity;
+};
+
+function PlaceCardItem({ activity }: Props) {
   return (
     <div>
       <Image

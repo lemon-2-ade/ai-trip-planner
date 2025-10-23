@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Wallet, Star } from "lucide-react";
 import Link from "next/link";
@@ -8,22 +8,33 @@ import { Button } from "@/components/ui/button";
 import { Hotel } from "./Chatbox";
 import axios from "axios";
 
-function HotelCardItem({ hotel }: { hotel: Hotel }) {
+type Props = {
+  hotel: Hotel;
+};
+
+function HotelCardItem({ hotel }: Props) {
+  const [photoUrl, setPhotoUrl] = useState<string>("");
+  
   useEffect(() => {
     hotel && getGooglePlaceDetail();
   }, [hotel]);
   
   const getGooglePlaceDetail = async () => {
-    const result = await axios.post('/api/google-place-detail', {
-      placeName: hotel.hotel_name
+    const result = await axios.post('/api/google-places-detail', {
+      placeName: hotel?.hotel_name
     });
-    console.log(result.data);
+
+    if (result?.data.e)
+      return;
+
+    setPhotoUrl(result?.data);
+    console.log("Photo URL:", result?.data);
   };
 
   return (
     <div className="flex flex-col gap-1">
       <Image
-        src={"/hotel.jpg"}
+        src={photoUrl ? photoUrl : "/images/hotel-placeholder.jpg"}
         alt="place-image"
         width={400}
         height={200}
