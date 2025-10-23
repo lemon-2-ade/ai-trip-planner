@@ -45,7 +45,7 @@ function Header() {
       {isAuthenticated ? (
         <div className="flex items-center gap-4">
           <span className="text-sm">Welcome, {user?.name}</span>
-          <Button variant="outline" onClick={logout}>
+          <Button variant="outline" className="hover:cursor-pointer" onClick={logout}>
             Sign Out
           </Button>
           <Button

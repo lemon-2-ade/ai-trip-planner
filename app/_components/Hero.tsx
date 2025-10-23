@@ -6,6 +6,7 @@ import { ArrowUp, Globe2, Landmark, Plane, Send } from "lucide-react";
 import React from "react";
 import { useRouter } from "next/navigation";
 import AuthModal from "./auth/AuthModal";
+import { useAuth } from "./auth/AuthProvider";
 
 const suggestions = [
   {
@@ -28,6 +29,7 @@ const suggestions = [
 
 function Hero() {
   const router = useRouter();
+  const { user, isAuthenticated } = useAuth();
 
   return (
     <div className="mt-24 w-full flex justify-center">
@@ -48,14 +50,26 @@ function Hero() {
               placeholder="Create a trip for Goa to Manali :D"
               className="w-full h-28 bg-transparent border-none focus-visible:ring-0 shadow-none resize-none"
             />
-            <AuthModal>
-              <Button
-                size={"icon"}
-                className="absolute bottom-6 right-6 hover:cursor-pointer"
-              >
+            {!isAuthenticated && (
+              <AuthModal>
+                <Button
+                  size={"icon"}
+                  className="absolute bottom-6 right-6 hover:cursor-pointer"
+                  // onClick={() => ()}
+                >
                 <Send className="h-4 w-4" />
               </Button>
             </AuthModal>
+            )}
+            {isAuthenticated && (
+              <Button
+                size={"icon"}
+                className="absolute bottom-6 right-6 hover:cursor-pointer"
+                onClick={() => router.push("/create-new-trip")}
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            )}
           </div>
         </div>
         {/* Suggestion List */}
