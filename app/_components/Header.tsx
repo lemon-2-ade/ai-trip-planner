@@ -24,6 +24,11 @@ function Header() {
     }
   };
 
+  const handleLogout = () => {
+    logout();
+    router.push("/");
+  };
+
   return (
     <div className="flex justify-between items-center p-4 border-2">
       {/* Logo */}
@@ -45,7 +50,7 @@ function Header() {
       {isAuthenticated ? (
         <div className="flex items-center gap-4">
           <span className="text-sm">Welcome, {user?.name}</span>
-          <Button variant="outline" className="hover:cursor-pointer" onClick={logout}>
+          <Button variant="outline" className="hover:cursor-pointer" onClick={handleLogout}>
             Sign Out
           </Button>
           <Button

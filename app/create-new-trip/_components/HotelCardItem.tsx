@@ -27,7 +27,6 @@ function HotelCardItem({ hotel }: Props) {
     if (result?.data.e) return;
 
     setPhotoUrl(result?.data);
-    console.log("Photo URL:", result?.data);
   };
 
   return (
