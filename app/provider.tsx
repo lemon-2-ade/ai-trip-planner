@@ -1,5 +1,6 @@
 import React from "react";
 import Header from "./_components/Header";
+import AuthProvider from "./_components/auth/AuthProvider";
 
 function Provider({
   children,
@@ -7,10 +8,12 @@ function Provider({
   children: React.ReactNode;
 }>) {
   return (
-    <div>
-      <Header />
-      {children}
-    </div>
+    <AuthProvider>
+      <div>
+        <Header />
+        {children}
+      </div>
+    </AuthProvider>
   );
 }
 

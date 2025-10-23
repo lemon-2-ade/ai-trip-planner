@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
 import { Loader, Send } from "lucide-react";
-import React from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import EmptyBoxState from "./EmptyBoxState";
 import GroupSizeUi from "./GroupSizeUi";
 import BudgetUi from "./BudgetUi";
 import FinalUi from "./FinalUi";
+import TripDurationUi from "./TripDurationUi";
 
 type Message = {
   role: string;
@@ -17,36 +17,90 @@ type Message = {
   ui?: string;
 };
 
+export type TripInfo = {
+  budget: string,
+  destination: string,
+  duration: string,
+  group_size: string,
+  origin: string,
+  hotels: Hotel[],
+  itinerary: Itinerary,
+};
+
+export type Hotel = {
+  hotel_name: string,
+  hotel_address: string,
+  price_per_night: string,
+  hotel_image_url: string,
+  geo_coordinates: {
+    latitude: number,
+    longitude: number,
+  },
+  rating: number,
+  description: string,
+};
+
+export type Activity = {
+  place_name: string,
+  place_details: string,
+  place_image_url: string,
+  geo_coordinates: {
+    latitude: number,
+    longitude: number,
+  },
+  place_address: string,
+  ticket_pricing: string,
+  time_travel_each_location: string,
+  best_time_to_visit: string,
+};
+
+export type Itinerary = {
+  day: number,
+  day_plan: string,
+  best_time_to_visit_day: string,
+  activities: Activity[],
+};
+
 function Chatbox() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const [isFinal, setIsFinal] = useState<boolean>(false);
+  const [tripDetail, setTripDetail] = useState<TripInfo>(null);
 
-  const onSend = async (inputText?: string) => {
-    const messageToSend = inputText?.trim() || userInput?.trim();
-    if (!messageToSend) return;
+  const onSend = async () => {
+    if (!userInput?.trim()) return;
 
     setLoading(true);
-    const newMessage: Message = { role: "user", content: messageToSend };
+    setUserInput("");
+
+    const newMessage: Message = {
+      role: "user",
+      content: userInput,
+    };
+
+    setMessages((prev: Message[]) => [...prev, newMessage]);
 
     try {
-      setMessages((prev: Message[]) => [...prev, newMessage]);
-
-      if (!inputText) setUserInput("");
-
       const result = await axios.post("/api/ai", {
         messages: [...messages, newMessage],
+        isFinal: isFinal,
       });
-
-      setMessages((prev: Message[]) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: result?.data?.response,
-          ui: result?.data?.ui,
-        },
-      ]);
       console.log(result.data);
+
+      !isFinal &&
+        setMessages((prev: Message[]) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: result?.data?.response,
+            ui: result?.data?.ui,
+          },
+        ]);
+
+      if (isFinal) {
+        setTripDetail(result?.data?.trip_plan);
+      }
     } catch (error) {
       console.error("Error sending message:", error);
     } finally {
@@ -62,7 +116,7 @@ function Chatbox() {
       return (
         <BudgetUi
           onSelectedOption={(value: string) => {
-            onSend(value);
+            setUserInput(value);
           }}
         />
       );
@@ -70,17 +124,32 @@ function Chatbox() {
       return (
         <GroupSizeUi
           onSelectedOption={(value: string) => {
-            onSend(value);
+            setUserInput(value);
           }}
         />
       );
     } else if (uiType == "tripduration") {
-      // Implement trip duration UI when ready
-      return null;
+      return (
+        <TripDurationUi
+          onSelectedOption={(value: string) => {
+            setUserInput(value);
+          }}
+        />
+      );
     } else if (uiType == "final") {
-      return <FinalUi viewTrip={() => console.log()} />;
-    } return null;
+      return <FinalUi viewTrip={() => console.log()} disable={!tripDetail} />;
+    }
+    return null;
   };
+
+  useEffect(() => {
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage?.ui == "final") {
+      setIsFinal(true);
+      setUserInput("Okay great!");
+      onSend();
+    }
+  }, [messages]);
 
   return (
     <div className="h-[80vh] flex flex-col">

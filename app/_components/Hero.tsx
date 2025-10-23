@@ -1,10 +1,11 @@
-'use client';
+"use client";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowUp, Globe2, Landmark, Plane, Send } from "lucide-react";
 import React from "react";
 import { useRouter } from "next/navigation";
+import AuthModal from "./auth/AuthModal";
 
 const suggestions = [
   {
@@ -27,7 +28,7 @@ const suggestions = [
 
 function Hero() {
   const router = useRouter();
-  
+
   return (
     <div className="mt-24 w-full flex justify-center">
       {/* Content */}
@@ -47,9 +48,14 @@ function Hero() {
               placeholder="Create a trip for Goa to Manali :D"
               className="w-full h-28 bg-transparent border-none focus-visible:ring-0 shadow-none resize-none"
             />
-            <Button size={"icon"} className="absolute bottom-6 right-6 hover:cursor-pointer" onClick={() => router.push('/create-new-trip')}>
-              <Send className="h-4 w-4" />
-            </Button>
+            <AuthModal>
+              <Button
+                size={"icon"}
+                className="absolute bottom-6 right-6 hover:cursor-pointer"
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            </AuthModal>
           </div>
         </div>
         {/* Suggestion List */}
@@ -64,7 +70,11 @@ function Hero() {
             </div>
           ))}
         </div>
-        <h2 className="my-7 mt-14 flex gap-2 text-center">Not sure where to start? <strong>Just pick your destination and go with the flow!</strong><ArrowUp /></h2>
+        <h2 className="my-7 mt-14 flex gap-2 text-center">
+          Not sure where to start?{" "}
+          <strong>Just pick your destination and go with the flow!</strong>
+          <ArrowUp />
+        </h2>
         {/* Video Section */}
       </div>
     </div>

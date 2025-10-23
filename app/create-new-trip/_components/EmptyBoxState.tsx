@@ -1,4 +1,5 @@
 import React from "react";
+import TripDurationUi from "./TripDurationUi";
 
 function EmptyBoxState() {
   return (
