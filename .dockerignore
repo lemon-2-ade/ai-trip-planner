@@ -1,0 +1,15 @@
+# Node/npm files
+node_modules
+npm-debug.log
+.npm
+
+# Next.js Build/Cache Artifacts
+.next/
+out/
+build/
+
+# Local/OS files
+.git
+.gitignore
+.DS_Store
+.vscode
