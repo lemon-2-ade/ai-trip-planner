@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { auth } from "@/lib/firebase-auth";
 
 const prisma = new PrismaClient();
 
 // Middleware to verify the user is authenticated
-async function getCurrentUser(request: Request) {
+async function getCurrentUser(request: NextRequest) {
   // Get the Firebase ID token from the authorization header
   const authHeader = request.headers.get("authorization");
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -35,7 +35,7 @@ async function getCurrentUser(request: Request) {
 }
 
 // POST /api/trips - Create a new trip
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     // Authenticate user
     const user = await getCurrentUser(request);
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
 }
 
 // GET /api/trips - Get all trips for a user
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
     // Authenticate user
     const user = await getCurrentUser(request);

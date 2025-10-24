@@ -10,6 +10,7 @@ import GroupSizeUi from "./GroupSizeUi";
 import BudgetUi from "./BudgetUi";
 import FinalUi from "./FinalUi";
 import TripDurationUi from "./TripDurationUi";
+import { useTripDetail } from "@/app/provider";
 
 type Message = {
   role: string;
@@ -18,47 +19,47 @@ type Message = {
 };
 
 export type TripInfo = {
-  budget: string,
-  destination: string,
-  duration: string,
-  group_size: string,
-  origin: string,
-  hotels: Hotel[],
-  itinerary: Itinerary,
+  budget: string;
+  destination: string;
+  duration: string;
+  group_size: string;
+  origin: string;
+  hotels: Hotel[];
+  itinerary: Itinerary[];
 };
 
 export type Hotel = {
-  hotel_name: string,
-  hotel_address: string,
-  price_per_night: string,
-  hotel_image_url: string,
+  hotel_name: string;
+  hotel_address: string;
+  price_per_night: string;
+  hotel_image_url: string;
   geo_coordinates: {
-    latitude: number,
-    longitude: number,
-  },
-  rating: number,
-  description: string,
+    latitude: number;
+    longitude: number;
+  };
+  rating: number;
+  description: string;
 };
 
 export type Activity = {
-  place_name: string,
-  place_details: string,
-  place_image_url: string,
+  place_name: string;
+  place_details: string;
+  place_image_url: string;
   geo_coordinates: {
-    latitude: number,
-    longitude: number,
-  },
-  place_address: string,
-  ticket_pricing: string,
-  time_travel_each_location: string,
-  best_time_to_visit: string,
+    latitude: number;
+    longitude: number;
+  };
+  place_address: string;
+  ticket_pricing: string;
+  time_travel_each_location: string;
+  best_time_to_visit: string;
 };
 
 export type Itinerary = {
-  day: number,
-  day_plan: string,
-  best_time_to_visit_day: string,
-  activities: Activity[],
+  day: number;
+  day_plan: string;
+  best_time_to_visit_day: string;
+  activities: Activity[];
 };
 
 function Chatbox() {
@@ -66,7 +67,9 @@ function Chatbox() {
   const [userInput, setUserInput] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [isFinal, setIsFinal] = useState<boolean>(false);
-  const [tripDetail, setTripDetail] = useState<TripInfo>(null);
+  const [tripDetail, setTripDetail] = useState<TripInfo>();
+  // @ts-ignore
+  const { tripDetailInfo, setTripDetailInfo } = useTripDetail();
 
   const onSend = async () => {
     if (!userInput?.trim()) return;
@@ -99,7 +102,39 @@ function Chatbox() {
         ]);
 
       if (isFinal) {
-        setTripDetail(result?.data?.trip_plan);
+        const tripPlan = result?.data?.trip_plan;
+        setTripDetail(tripPlan);
+        setTripDetailInfo(tripPlan);
+
+        // Save the trip to the database
+        try {
+          const { getIdToken } = await import("firebase/auth");
+          const { auth } = await import("@/lib/firebase-auth");
+
+          // Get the current user's token
+          const user = auth.currentUser;
+          if (!user) {
+            throw new Error("User not authenticated");
+          }
+
+          const token = await getIdToken(user);
+
+          const saveResponse = await axios.post(
+            "/api/trips",
+            { tripDetails: tripPlan },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "user-id": user.uid,
+              },
+            }
+          );
+          console.log("Trip saved successfully:", saveResponse.data);
+        } catch (error) {
+          console.error("Error saving trip:", error);
+        }
+
+        setIsFinal(false);
       }
     } catch (error) {
       console.error("Error sending message:", error);
