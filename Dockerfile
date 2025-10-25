@@ -6,7 +6,14 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install
 
-# Copy source code and build
+# Copy prisma schema and env file
+COPY prisma ./prisma/
+COPY .env .env
+
+# Generate Prisma Client
+RUN npx prisma generate
+
+# Copy remaining source code and build
 COPY . .
 RUN npm run build
 
@@ -19,9 +26,10 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/public ./public
+COPY --from=builder /app/.env ./.env
 
 # Set environment and port (Next.js defaults to 3000)
-ENV NODE_ENV production
+ENV NODE_ENV=production
 EXPOSE 3000
 
 # Start the application
