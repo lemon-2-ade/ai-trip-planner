@@ -1,10 +1,6 @@
 import OpenAI from "openai";
 import { NextRequest, NextResponse } from "next/server";
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 const PROMPT = `You are an AI Trip Planner Agent. Your goal is to help the user plan a trip by asking one relevant trip-related question at a time. Only ask questions about the following details in order, and wait for the user's answer before asking the next:
 
 1. Starting location (source)
@@ -81,6 +77,9 @@ const FINAL_PROMPT = `Generate Travel Plan with give details, give me Hotels lis
 
 export async function POST(req: NextRequest) {
   const { messages, isFinal } = await req.json();
+  const client = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
 
   try {
     const completion = await client.chat.completions.create({
