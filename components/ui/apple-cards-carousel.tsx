@@ -5,6 +5,7 @@ import React, {
   useState,
   createContext,
   useContext,
+  type JSX,
 } from "react";
 import {
   IconArrowNarrowLeft,
@@ -37,7 +38,7 @@ export const CarouselContext = createContext<{
 });
 
 export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
-  const carouselRef = React.useRef<HTMLDivElement>(null);
+  const carouselRef = React.useRef<HTMLDivElement | null>(null);
   const [canScrollLeft, setCanScrollLeft] = React.useState(false);
   const [canScrollRight, setCanScrollRight] = React.useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -98,14 +99,14 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
         >
           <div
             className={cn(
-              "absolute right-0 z-[1000] h-auto w-[5%] overflow-hidden bg-gradient-to-l",
+              "absolute right-0 z-[1000] h-auto w-[5%] overflow-hidden bg-gradient-to-l"
             )}
           ></div>
 
           <div
             className={cn(
               "flex flex-row justify-start gap-4 pl-4",
-              "mx-auto max-w-7xl", // remove max-w-4xl if you want the carousel to span the full width of its container
+              "mx-auto max-w-7xl" // remove max-w-4xl if you want the carousel to span the full width of its container
             )}
           >
             {items.map((item, index) => (
@@ -121,7 +122,7 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
                     duration: 0.5,
                     delay: 0.2 * index,
                     ease: "easeOut",
-                    once: true,
+                    // once: true,
                   },
                 }}
                 key={"card" + index}
@@ -163,7 +164,7 @@ export const Card = ({
   layout?: boolean;
 }) => {
   const [open, setOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const { onCardClose, currentIndex } = useContext(CarouselContext);
 
   useEffect(() => {
@@ -280,8 +281,8 @@ export const BlurImage = ({
     <img
       className={cn(
         "h-full w-full transition duration-300",
-        isLoading ? "blur-sm" : "blur-0",
-        className,
+        // isLoading ? "blur-sm" : "blur-0",
+        className
       )}
       onLoad={() => setLoading(false)}
       src={src as string}
@@ -289,7 +290,7 @@ export const BlurImage = ({
       height={height}
       loading="lazy"
       decoding="async"
-      blurDataURL={typeof src === "string" ? src : undefined}
+      // blurDataURL={typeof src === "string" ? src : undefined}
       alt={alt ? alt : "Background of a beautiful view"}
       {...rest}
     />
