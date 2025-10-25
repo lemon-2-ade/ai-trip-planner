@@ -57,6 +57,7 @@ jobs:
             --name $APP_NAME \
             -p 3000:3000 \
             --restart always \
+            --env-file $APP_DIR/.env \
             ${{ secrets.DOCKER_USERNAME }}/travel-app:latest
 
           echo "Deployment successful. The application is now running."
