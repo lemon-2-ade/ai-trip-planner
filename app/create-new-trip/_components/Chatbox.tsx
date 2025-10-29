@@ -105,35 +105,6 @@ function Chatbox() {
         const tripPlan = result?.data?.trip_plan;
         setTripDetail(tripPlan);
         setTripDetailInfo(tripPlan);
-
-        // Save the trip to the database
-        try {
-          const { getIdToken } = await import("firebase/auth");
-          const { auth } = await import("@/lib/firebase-auth");
-
-          // Get the current user's token
-          const user = auth.currentUser;
-          if (!user) {
-            throw new Error("User not authenticated");
-          }
-
-          const token = await getIdToken(user);
-
-          const saveResponse = await axios.post(
-            "/api/trips",
-            { tripDetails: tripPlan },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "user-id": user.uid,
-              },
-            }
-          );
-          console.log("Trip saved successfully:", saveResponse.data);
-        } catch (error) {
-          console.error("Error saving trip:", error);
-        }
-
         setIsFinal(false);
       }
     } catch (error) {

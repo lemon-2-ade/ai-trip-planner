@@ -1,5 +1,6 @@
 "use client";
 
+import axios from "axios";
 import { initializeApp, getApps, getApp } from "firebase/app";
 import {
   getAuth,
@@ -65,12 +66,17 @@ export const signUp = async (name: string, email: string, password: string) => {
 export const signIn = async (email: string, password: string) => {
   try {
     const userCredential = await signInWithFirebase(auth, email, password);
+    const res = await axios.post("/api/auth/login", {
+      firebaseUid: userCredential.user.uid,
+      email: email,
+    });
+    const userData = res.data;
 
     return {
       id: userCredential.user.uid,
-      name: userCredential.user.displayName || "",
+      name: userData.name || userCredential.user.displayName || email.split("@")[0],
       email: userCredential.user.email || "",
-      imageUrl: userCredential.user.photoURL || null,
+      imageUrl: userData.imageUrl || userCredential.user.photoURL || null,
       providerType: "email",
     };
   } catch (error) {
