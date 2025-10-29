@@ -60,6 +60,10 @@ jobs:
           docker stop $APP_NAME || true
           docker rm $APP_NAME || true
 
+          # Check and kill any process using port 3000
+          echo "Checking for processes using port 3000..."
+          sudo lsof -i :3000 | awk 'NR!=1 {print $2}' | xargs -r sudo kill -9
+
           # Run the new container
           echo "Starting new container..."
           docker run -d \
@@ -69,4 +73,11 @@ jobs:
             --env-file $APP_DIR/.env \
             ${{ secrets.DOCKER_USERNAME }}/travel-app:latest
 
-          echo "Deployment successful. The application is now running."
+          # Verify container is running
+          if docker ps | grep -q $APP_NAME; then
+            echo "Deployment successful. The application is now running."
+          else
+            echo "Container failed to start. Checking logs..."
+            docker logs $APP_NAME
+            exit 1
+          fi
