@@ -11,6 +11,7 @@ import BudgetUi from "./BudgetUi";
 import FinalUi from "./FinalUi";
 import TripDurationUi from "./TripDurationUi";
 import { useTripDetail } from "@/app/provider";
+import { useAuth } from "@/app/_components/auth/AuthProvider";
 
 type Message = {
   role: string;
@@ -70,6 +71,7 @@ function Chatbox() {
   const [tripDetail, setTripDetail] = useState<TripInfo>();
   // @ts-ignore
   const { tripDetailInfo, setTripDetailInfo } = useTripDetail();
+  const { user } = useAuth();
 
   const onSend = async () => {
     if (!userInput?.trim()) return;
@@ -89,7 +91,6 @@ function Chatbox() {
         messages: [...messages, newMessage],
         isFinal: isFinal,
       });
-      console.log(result.data);
 
       !isFinal &&
         setMessages((prev: Message[]) => [
@@ -105,6 +106,19 @@ function Chatbox() {
         const tripPlan = result?.data?.trip_plan;
         setTripDetail(tripPlan);
         setTripDetailInfo(tripPlan);
+
+        // Save trip to database
+        try {
+          if (user) {
+            const res = await axios.post("/api/trips", {
+              userId: user.id,
+              tripDetails: tripPlan,
+            });
+          }
+        } catch (error) {
+          console.error("Error saving trip:", error);
+        }
+
         setIsFinal(false);
       }
     } catch (error) {
@@ -116,7 +130,6 @@ function Chatbox() {
 
   const RenderGenerativeUi = (ui: string) => {
     const uiType = (ui || "").toLowerCase().trim();
-    console.log("Rendering UI type:", uiType); // Debug log
 
     if (uiType == "budget") {
       return (
