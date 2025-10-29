@@ -94,7 +94,6 @@ export async function POST(req: NextRequest) {
       ],
     });
 
-    console.log(completion.choices[0].message);
     const response = completion.choices[0].message;
 
     return NextResponse.json(JSON.parse(response.content ?? ""));
