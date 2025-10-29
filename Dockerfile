@@ -6,8 +6,9 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install
 
-# Copy prisma schema
+# Copy prisma schema and env file
 COPY prisma ./prisma/
+COPY .env /app/.env
 
 # Generate Prisma Client
 RUN npx prisma generate

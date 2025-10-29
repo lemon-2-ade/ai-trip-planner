@@ -102,18 +102,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true);
       const userData = await signIn(email, password);
-
-      // Save user to database if needed
-      try {
-        await axios.post("/api/auth/login", {
-          email,
-          password,
-        });
-      } catch (error) {
-        console.error("Error saving user to database:", error);
-        // We still have Firebase auth, so continue
-      }
-
       setUser(userData);
     } catch (error) {
       console.error("Login error:", error);
@@ -145,22 +133,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(true);
 
       // Create user in Firebase
-      const userData = await signUp(name, email, password);
+      let userData = await signUp(name, email, password);
 
       // Create user in database
       try {
-        await axios.post("/api/auth/signup", {
+        const res = await axios.post("/api/auth/signup", {
           name,
           email,
           password,
           providerId: userData.id,
           providerType: "email",
         });
+        userData = res.data;
       } catch (error) {
         console.error("Error saving user to database:", error);
         // We still have Firebase auth, so continue
       }
 
+      console.log(userData);
       setUser(userData);
     } catch (error) {
       console.error("Signup error:", error);
