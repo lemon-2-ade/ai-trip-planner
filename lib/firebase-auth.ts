@@ -29,11 +29,17 @@ const googleProvider = new GoogleAuthProvider();
 export const signInWithGoogle = async () => {
   try {
     const result = await signInWithPopup(auth, googleProvider);
+    const res = await axios.post("/api/auth/login", {
+      firebaseUid: result.user.uid,
+      email: result.user.email,
+    });
+    const userData = res.data;
+    
     return {
-      id: result.user.uid,
-      name: result.user.displayName || "",
-      email: result.user.email || "",
-      imageUrl: result.user.photoURL || "",
+      id: userData.id,
+      name: userData.name || result.user.displayName || "",
+      email: userData.email || result.user.email || "",
+      imageUrl: userData.imageUrl || result.user.photoURL || "",
       providerType: "google",
     };
   } catch (error) {
@@ -73,7 +79,7 @@ export const signIn = async (email: string, password: string) => {
     const userData = res.data;
 
     return {
-      id: userCredential.user.uid,
+      id: userData.id,
       name: userData.name || userCredential.user.displayName || email.split("@")[0],
       email: userCredential.user.email || "",
       imageUrl: userData.imageUrl || userCredential.user.photoURL || null,
