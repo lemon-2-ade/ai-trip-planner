@@ -25,7 +25,7 @@ function SignUp({ onModeSwitch, onSuccess }: SignUpProps) {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const { signup, loginWithGoogle } = useAuth();
+  const { signup, loginWithGoogle, loginWithGithub } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,6 +48,18 @@ function SignUp({ onModeSwitch, onSuccess }: SignUpProps) {
       onSuccess();
     } catch (error) {
       console.error("Google sign in error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGithubSignIn = async () => {
+    setIsLoading(true);
+    try {
+      await loginWithGithub();
+      onSuccess();
+    } catch (error) {
+      console.error("Github sign in error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -153,14 +165,14 @@ function SignUp({ onModeSwitch, onSuccess }: SignUpProps) {
             />
             Google
           </Button>
-          <Button variant="outline" className="w-45 hover:cursor-pointer">
-            <Image
-              src="/microsoft.svg"
-              alt="Microsoft"
-              width={20}
-              height={20}
-            />
-            Microsoft
+          <Button
+            variant="outline"
+            className="w-45 hover:cursor-pointer"
+            onClick={handleGithubSignIn}
+            disabled={isLoading}
+          >
+            <Image src="/github.svg" alt="Github" width={20} height={20} />
+            Github
           </Button>
         </div>
       </CardFooter>

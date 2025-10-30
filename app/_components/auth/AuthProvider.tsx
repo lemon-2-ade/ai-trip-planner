@@ -6,6 +6,7 @@ import {
   signIn,
   signUp,
   signInWithGoogle,
+  signInWithGithub,
   signOut,
 } from "@/lib/firebase-auth";
 import { onAuthStateChanged } from "firebase/auth";
@@ -23,6 +24,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
+  loginWithGithub: () => Promise<void>;
   signup: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   loading: boolean;
@@ -59,7 +61,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               providerId: firebaseUser.uid,
               image: firebaseUser.photoURL,
             });
-            console.log(firebaseUser);
+
+            setUser({
+              id: response.data.id,
+              name: response.data.name,
+              email: response.data.email,
+              imageUrl: response.data.image || response.data.imageUrl,
+            });
+          } else if (firebaseUser.providerData[0]?.providerId === "github.com") {
+            // For Github Auth users
+            const response = await axios.post("/api/auth/github", {
+              name: firebaseUser.displayName,
+              email: firebaseUser.email,
+              providerId: firebaseUser.uid,
+              image: firebaseUser.photoURL,
+            });
 
             setUser({
               id: response.data.id,
@@ -68,7 +84,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               imageUrl: response.data.image || response.data.imageUrl,
             });
           } else {
-            console.log("this is for other auth ");
             // Set user directly from Firebase data
             const res = await axios.get("/api/db/user",
               { params: { firebaseUid: firebaseUser.uid } }
@@ -134,6 +149,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  // Login with Github
+  const loginWithGithub = async () => {
+    try {
+      setLoading(true);
+      const userData = await signInWithGithub();
+      setUser(userData);
+    } catch (error) {
+      console.error("Github login error:", error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Signup with email and password
   const signup = async (name: string, email: string, password: string) => {
     try {
@@ -188,6 +217,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isAuthenticated: !!user,
         login,
         loginWithGoogle,
+        loginWithGithub,
         signup,
         logout,
         loading,

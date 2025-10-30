@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { userId, tripDetails } = body;
@@ -28,11 +28,10 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   try {
     // Get userId from the URL search params
-    const { searchParams } = new URL(req.url);
-    const userId = searchParams.get("userId");
+    const userId = req.nextUrl.searchParams.get("userId");
 
     if (!userId) {
       return NextResponse.json(

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useEffect, useState } from "react";
 import { Timeline } from "@/components/ui/timeline";
@@ -6,6 +6,7 @@ import HotelCardItem from "./HotelCardItem";
 import PlaceCardItem from "./PlaceCardItem";
 import { useTripDetail } from "@/app/provider";
 import { TripInfo } from "./Chatbox";
+import GoogleMap from "./GoogleMap";
 
 // const TRIP_DATA = {
 //   destination: "Manali",
@@ -174,40 +175,47 @@ import { TripInfo } from "./Chatbox";
 function Itinerary() {
   // @ts-ignore
   const { tripDetailInfo, setTripDetailInfo } = useTripDetail();
-  const [tripData, setTripData] = useState<TripInfo|null>(null);
+  const [tripData, setTripData] = useState<TripInfo | null>(null);
 
   useEffect(() => {
     tripDetailInfo && setTripData(tripDetailInfo);
   }, [tripDetailInfo]);
 
-  const data = tripData ? [
-    {
-      title: "Recommended Hotels",
-      content: (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {tripData?.hotels.map((hotel, index: number) => (
-            <HotelCardItem hotel={hotel} key={index} />
-          ))}
-        </div>
-      ),
-    },
-    ...tripData?.itinerary.map((itinerary, index: number) => ({
-      title: `Day ${itinerary.day}`,
-      content: (
-        <div key={index}>
-          <p>Best Time: {itinerary?.best_time_to_visit_day}</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {itinerary?.activities.map((activity, index: number) => (
-              <PlaceCardItem activity={activity} key={index} />
-            ))}
-          </div>
-        </div>
-      ),
-    })),
-  ] : [];
+  const data = tripData
+    ? [
+        {
+          title: "Recommended Hotels",
+          content: (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {tripData?.hotels.map((hotel, index: number) => (
+                <HotelCardItem hotel={hotel} key={index} />
+              ))}
+            </div>
+          ),
+        },
+        ...tripData?.itinerary.map((itinerary, index: number) => ({
+          title: `Day ${itinerary.day}`,
+          content: (
+            <div key={index}>
+              <p>Best Time: {itinerary?.best_time_to_visit_day}</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {itinerary?.activities.map((activity, index: number) => (
+                  <PlaceCardItem activity={activity} key={index} />
+                ))}
+              </div>
+            </div>
+          ),
+        })),
+      ]
+    : [];
 
   return (
     <div className="relative w-full h-[80vh] overflow-auto">
+      {!tripData && (
+        <div className="w-full h-full p-4">
+          <GoogleMap />
+        </div>
+      )}
       {tripData && <Timeline data={data} tripData={tripData} />}
     </div>
   );

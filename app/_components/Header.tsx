@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import React from "react";
-import { useRouter } from "next/navigation";
+import React, { use } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import AuthModal from "./auth/AuthModal";
 import { useAuth } from "./auth/AuthProvider";
@@ -17,6 +17,7 @@ const menuOptions = [
 function Header() {
   const router = useRouter();
   const { user, isAuthenticated, logout } = useAuth();
+  const path = usePathname();
 
   const handleGetStarted = () => {
     if (isAuthenticated) {
@@ -64,12 +65,15 @@ function Header() {
           >
             Sign Out
           </Button>
-          <Button
-            className="hover:cursor-pointer"
-            onClick={() => router.push("/create-new-trip")}
-          >
-            Create Trip
-          </Button>
+          {path == "/create-new-trip" ? (
+            <Link href="/my-trips">
+              <Button className="hover:cursor-pointer">My Trips</Button>
+            </Link>
+          ) : (
+            <Link href="/create-new-trip">
+              <Button className="hover:cursor-pointer">Create Trip</Button>
+            </Link>
+          )}
         </div>
       ) : (
         <AuthModal>

@@ -5,6 +5,7 @@ import { initializeApp, getApps, getApp } from "firebase/app";
 import {
   getAuth,
   GoogleAuthProvider,
+  GithubAuthProvider,
   signInWithPopup,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword as signInWithFirebase,
@@ -26,6 +27,7 @@ const firebaseConfig = {
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
+const githubProvider = new GithubAuthProvider();
 
 export const signInWithGoogle = async () => {
   try {
@@ -47,6 +49,30 @@ export const signInWithGoogle = async () => {
     };
   } catch (error) {
     console.error("Google sign in error:", error);
+    throw error;
+  }
+};
+
+export const signInWithGithub = async () => {
+  try {
+    const result = await signInWithPopup(auth, githubProvider);
+    const res = await axios.post("/api/auth/github", {
+      name: result.user.displayName,
+      providerId: result.user.uid,
+      email: result.user.email,
+      imageUrl: result.user.photoURL,
+    });
+    const userData = res.data;
+
+    return {
+      id: userData.id,
+      name: userData.name || result.user.displayName || "",
+      email: userData.email || result.user.email || "",
+      imageUrl: userData.imageUrl || result.user.photoURL || "",
+      providerType: "github",
+    };
+  } catch (error) {
+    console.error("Github sign in error:", error);
     throw error;
   }
 };
