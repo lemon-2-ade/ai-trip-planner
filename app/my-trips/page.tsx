@@ -6,13 +6,30 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../_components/auth/AuthProvider";
 import { useRouter } from "next/navigation";
-import { LoaderCircle } from "lucide-react";
+import { ArrowBigRightIcon, LoaderCircle } from "lucide-react";
+import { TripInfo } from "../create-new-trip/_components/Chatbox";
+import Image from "next/image";
+import MyTripCardItem from "./_components/MyTripCardItem";
+
+export type Trip = {
+  id: any;
+  tripDetails: TripInfo;
+  userId: string;
+};
 
 function MyTrips() {
   const { user } = useAuth();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
-  const [myTrips, setMyTrips] = useState([]);
+  const [myTrips, setMyTrips] = useState<Trip[]>([]);
+
+  const getUserTrips = async () => {
+    const res = await axios.get("/api/trips", {
+      params: { userId: user?.id },
+    });
+    const trips = res.data;
+    setMyTrips(trips);
+  };
 
   useEffect(() => {
     if (user === null) {
@@ -20,7 +37,7 @@ function MyTrips() {
     } else {
       setIsLoading(false);
     }
-    
+
     user && getUserTrips();
   }, [user, router]);
 
@@ -31,14 +48,6 @@ function MyTrips() {
       </div>
     );
   }
-
-  const getUserTrips = async () => {
-    const res = await axios.get("/api/trips", {
-      params: { userId: user?.id },
-    });
-    const trips = res.data;
-    console.log(trips);
-  };
 
   return (
     <div className="px-10 p-10 md:px-24 lg:px-48">
@@ -52,7 +61,11 @@ function MyTrips() {
         </div>
       )}
 
-      
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-5 mt-6">
+        {myTrips.map((trip, index) => (
+          <MyTripCardItem key={index} trip={trip} />
+        ))}
+      </div>
     </div>
   );
 }
