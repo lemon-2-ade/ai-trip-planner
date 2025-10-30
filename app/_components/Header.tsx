@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import React, { useState } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import AuthModal from "./auth/AuthModal";
@@ -49,8 +49,19 @@ function Header() {
       {/* Auth Button */}
       {isAuthenticated ? (
         <div className="flex items-center gap-4">
+          <Image
+            src={user?.imageUrl || "/default-avatar.png"}
+            alt="User Avatar"
+            width={30}
+            height={30}
+            className="rounded-full"
+          />
           <span className="text-sm">Welcome, {user?.name}</span>
-          <Button variant="outline" className="hover:cursor-pointer" onClick={handleLogout}>
+          <Button
+            variant="outline"
+            className="hover:cursor-pointer"
+            onClick={handleLogout}
+          >
             Sign Out
           </Button>
           <Button
