@@ -55,6 +55,13 @@ jobs:
           echo "Pulling the latest Docker image..."
           docker pull ${{ secrets.DOCKER_USERNAME }}/travel-app:latest
 
+          # Stop and remove the existing container if it exists
+          if [ $(docker ps -q -f name=$APP_NAME) ]; then
+            echo "Stopping existing container..."
+            docker stop $APP_NAME
+            docker rm $APP_NAME
+          fi
+
           # Run the new container
           echo "Starting new container..."
           docker run -d \
