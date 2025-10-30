@@ -9,6 +9,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword as signInWithFirebase,
   signOut as signOutFromFirebase,
+  ProviderId,
 } from "firebase/auth";
 
 // Firebase configuration
@@ -29,9 +30,11 @@ const googleProvider = new GoogleAuthProvider();
 export const signInWithGoogle = async () => {
   try {
     const result = await signInWithPopup(auth, googleProvider);
-    const res = await axios.post("/api/auth/login", {
-      firebaseUid: result.user.uid,
+    const res = await axios.post("/api/auth/google", {
+      name: result.user.displayName,
+      providerId: result.user.uid,
       email: result.user.email,
+      imageUrl: result.user.photoURL,
     });
     const userData = res.data;
     

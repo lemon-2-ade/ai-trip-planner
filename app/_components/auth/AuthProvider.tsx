@@ -59,6 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               providerId: firebaseUser.uid,
               image: firebaseUser.photoURL,
             });
+            console.log(firebaseUser);
 
             setUser({
               id: response.data.id,
@@ -67,12 +68,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               imageUrl: response.data.image || response.data.imageUrl,
             });
           } else {
+            console.log("this is for other auth ");
             // Set user directly from Firebase data
+            const res = await axios.get("/api/db/user",
+              { params: { firebaseUid: firebaseUser.uid } }
+            );
+            const user = res.data;
+            
             setUser({
-              id: firebaseUser.uid,
-              name: firebaseUser.displayName || "",
-              email: firebaseUser.email || "",
-              imageUrl: firebaseUser.photoURL,
+              id: user.id,
+              name: user.name || firebaseUser.displayName || firebaseUser.email?.split("@")[0] || "",
+              email: user.email || firebaseUser.email || "",
+              imageUrl: user.imageUrl || firebaseUser.photoURL,
             });
           }
         } catch (error) {
