@@ -24,7 +24,7 @@ function SignIn({ onModeSwitch, onSuccess }: SignInProps) {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const { login, loginWithGoogle } = useAuth();
+  const { login, loginWithGoogle, loginWithGithub } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,7 +39,7 @@ function SignIn({ onModeSwitch, onSuccess }: SignInProps) {
       setIsLoading(false);
     }
   };
-  
+
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
@@ -47,6 +47,17 @@ function SignIn({ onModeSwitch, onSuccess }: SignInProps) {
       onSuccess();
     } catch (error) {
       console.error("Google sign in error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGithubLogin = async () => {
+    setIsLoading(true);
+    try {
+      await loginWithGithub();
+    } catch (error) {
+      console.error("Github sign in error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -90,7 +101,11 @@ function SignIn({ onModeSwitch, onSuccess }: SignInProps) {
               disabled={isLoading}
             />
           </div>
-          <Button type="submit" className="w-full hover:cursor-pointer" disabled={isLoading}>
+          <Button
+            type="submit"
+            className="w-full hover:cursor-pointer"
+            disabled={isLoading}
+          >
             {isLoading ? "Signing in..." : "Sign In"}
           </Button>
         </form>
@@ -117,18 +132,29 @@ function SignIn({ onModeSwitch, onSuccess }: SignInProps) {
           </div>
         </div>
         <div className="flex justify-center items-center gap-2">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="w-45 hover:cursor-pointer"
             onClick={handleGoogleSignIn}
             disabled={isLoading}
           >
-            <Image src="/google.svg" alt="Google" width={20} height={20} className="mr-2" />
+            <Image
+              src="/google.svg"
+              alt="Google"
+              width={20}
+              height={20}
+              className="mr-2"
+            />
             Google
           </Button>
-          <Button variant="outline" className="w-45 hover:cursor-pointer">
-            <Image src="/microsoft.svg" alt="Microsoft" width={20} height={20} />
-            Microsoft
+          <Button
+            variant="outline"
+            className="w-45 hover:cursor-pointer"
+            onClick={handleGithubLogin}
+            disabled={isLoading}
+          >
+            <Image src="/github.svg" alt="Github" width={20} height={20} />
+            Github
           </Button>
         </div>
       </CardFooter>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import React from "react";
+import React, { use } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import AuthModal from "./auth/AuthModal";
