@@ -25,7 +25,7 @@ export default function GoogleMap({ center, zoom = 13 }: GoogleMapProps) {
     }
 
     if (!("geolocation" in navigator)) {
-      setCurrentLocation({ lat: 40.7128, lng: -74.006 }); // fallback NYC
+      setCurrentLocation({ lat: 12.971563, lng: 79.1662783 }); // fallback NYC
       return;
     }
 
